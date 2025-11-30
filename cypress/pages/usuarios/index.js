@@ -1,4 +1,4 @@
-const baseUrl = Cypress.config('baseUrl') || 'http://localhost:3000';
+const baseUrl = Cypress.config('baseUrl') || 'https://serverest.dev/';
 const administrador = "true";
 
 class Usuarios {
