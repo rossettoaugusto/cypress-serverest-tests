@@ -9,9 +9,8 @@
   "scripts": {
     "test": "cypress run",
 
-    "test:api": "cypress run --spec 'cypress/e2e/api/**/*.cy.js'",
-    "test:ui": "cypress run --spec 'cypress/e2e/ui/**/*.cy.js'",
-
+    "test:api": "cypress run --spec 'cypress/e2e/usuarios/**/*.cy.js'",
+    
     "test:api:ui": "npm run test:api && npm run test:ui",
 
     "merge-reports": "mochawesome-merge cypress/reports/*.json > cypress/reports/mochawesome.json",
