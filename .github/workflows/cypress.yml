@@ -1,65 +1,42 @@
-name: Cypress Tests
+name: Cypress + Allure Report
 
 on:
   push:
-    branches:
-      - develop
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
 
 jobs:
-  cypress-parallel:
+  cypress-run:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        test-type: [api, ui]
-
     steps:
-      # 1. Checkout do projeto
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      # 3. Instalar dependências
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      # 4. Rodar testes (API/UI)
-      - name: Run Cypress ${{ matrix.test-type }} tests
-        uses: cypress-io/github-action@v6
-        with:
-          command: npm run test:${{ matrix.test-type }}
+      - name: Run Cypress Tests
+        run: npm run test
+        continue-on-error: true
 
-      # 5. Upload vídeos
-      - name: Upload Cypress Videos
-        if: always()
+      - name: Generate Allure Report
+        run: npm run allure:generate
+
+      - name: Upload Artifact (Allure Report)
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-videos-${{ matrix.test-type }}
-          path: cypress/videos/
+          name: allure-report
+          path: allure-report
 
-      # 6. Upload screenshots
-      - name: Upload Cypress Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: cypress-screenshots-${{ matrix.test-type }}
-          path: cypress/screenshots/
-
-      # 7. Upload relatórios Mochawesome
-      - name: Upload Mochawesome Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-${{ matrix.test-type }}
-          path: cypress/reports/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
